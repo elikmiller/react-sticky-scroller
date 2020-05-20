@@ -1,64 +1,52 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import useWindowEvent from "./useWindowEvent";
 import debounce from "lodash/debounce";
 
-const StickyScroller = ({ items }) => {
-  const itemRefs = useRef(items.map((item) => React.createRef()));
-  useEffect(() => {
-    const callback = debounce((event) => {
-      const snapToIndex = itemRefs.current
-        .map((itemRef) => Math.abs(itemRef.current.getBoundingClientRect().y))
-        .reduce((acc, val, idx, arr) => {
-          if (val < arr[acc]) {
-            return idx;
-          }
-          return acc;
-        }, 0);
+export default ({ children, delay = 200, onScrollToChild = () => {} }) => {
+  // create a ref for each child element
+  const itemRefs = useRef(children.map(() => React.createRef()));
+
+  useWindowEvent(
+    "scroll",
+    debounce((event) => {
+      // user has scrolled to top of document - do nothing
+      if (window.scrollY === 0) return;
+
+      // user has scrolled to bottom of document - do nothing
+      if (window.scrollY + window.innerHeight === document.body.clientHeight)
+        return;
+
+      // determine index, ref, size, DOMRect of nearest child element
+      const nearestChildIndex = itemRefs.current
+        .map((itemRef) =>
+          Math.floor(Math.abs(itemRef.current.getBoundingClientRect().y))
+        )
+        .reduce((acc, val, idx, arr) => (val < arr[acc] ? idx : acc), 0);
+      const nearestChildRef = itemRefs.current[nearestChildIndex];
+      const nearestChildDOMRect = nearestChildRef.current.getBoundingClientRect();
+
+      // scroll distance would be less than 1 - do nothing
+      if (Math.abs(nearestChildDOMRect.y) < 1) return;
+
+      // scroll to nearest child element
+      onScrollToChild({
+        index: nearestChildIndex,
+        ref: nearestChildRef,
+        y: nearestChildDOMRect.y,
+      });
       window.scrollBy({
-        top: itemRefs.current[snapToIndex].current.getBoundingClientRect().y,
+        top: nearestChildDOMRect.y,
         behavior: "smooth",
       });
-    }, 200);
-    window.addEventListener("scroll", callback);
-    return () => window.removeEventListener("scroll", callback);
-  }, [itemRefs]);
+    }, delay),
+    [itemRefs]
+  );
 
   return (
     <>
-      <div
-        style={{
-          width: "100%",
-          height: "1px",
-          position: "fixed",
-          top: "50%",
-          backgroundColor: "red",
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {items.map((item, index) => (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: "100vh",
-              width: "100%",
-            }}
-            ref={itemRefs.current[index]}
-            key={index}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
+      {React.Children.map(children, (child, index) =>
+        React.cloneElement(child, { ref: itemRefs.current[index], key: index })
+      )}
     </>
   );
 };
-
-export default StickyScroller;
