@@ -1,5 +1,6 @@
 {
   "name": "react-sticky-scroller",
+  "version": "0.1.0",
   "description": "React component for building annoying, scrollbar-hijacking, websites",
   "keywords": [
     "component",
@@ -8,14 +9,34 @@
     "scroller",
     "sticky"
   ],
-  "version": "0.1.0",
+  "homepage": "https://github.com/elikmiller/react-sticky-scroller",
+  "bugs": {
+    "url": "https://github.com/elikmiller/react-sticky-scroller/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Eli K Miller",
+    "email": "eli@elikmiller.com",
+    "url": "https://elikmiller.com"
+  },
+  "main": "./src/index.js",
+  "browser": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elikmiller/react-sticky-scroller.git"
+  },
+  "scripts": {
+    "test": "echo \"No tests!\""
+  },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "prop-types": "^15.7.2"
   },
   "peerDependencies": {
     "react": "^16.8.0"
   },
-  "scripts": {
-    "test": "echo \"No tests!\""
+  "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-plugin-react": "^7.20.0"
   }
 }

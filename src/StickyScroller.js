@@ -1,14 +1,16 @@
 import React, { useRef } from "react";
-import useWindowEvent from "./useWindowEvent";
+import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
 
-export default ({ children, delay = 200, onScrollToChild = () => {} }) => {
+import useWindowEvent from "./useWindowEvent";
+
+const StickyScroller = ({ children, delay, onScrollToChild }) => {
   // create a ref for each child element
   const itemRefs = useRef(children.map(() => React.createRef()));
 
   useWindowEvent(
     "scroll",
-    debounce((event) => {
+    debounce(() => {
       // user has scrolled to top of document - do nothing
       if (window.scrollY === 0) return;
 
@@ -50,3 +52,16 @@ export default ({ children, delay = 200, onScrollToChild = () => {} }) => {
     </>
   );
 };
+
+StickyScroller.defaultProps = {
+  delay: 200,
+  onScrollToChild: () => {},
+};
+
+StickyScroller.propTypes = {
+  children: PropTypes.node.isRequired,
+  delay: PropTypes.number,
+  onScrollToChild: PropTypes.func,
+};
+
+export default StickyScroller;
