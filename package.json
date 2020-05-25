@@ -1,6 +1,6 @@
 {
   "name": "react-sticky-scroller",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "React component for building annoying, scrollbar-hijacking, websites",
   "keywords": [
     "component",
